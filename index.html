@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>统计</title>
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/flat-ui.css"/>
+    <link rel="stylesheet" href="css/control.css"/>
+    <script src="frame/jquery-1.11.3.min.js"></script>
+    <script src="frame/vue.js"></script>
+    <script src="frame/flat-ui.js"></script>
+    <script src="frame/application.js"></script>
+    <script src="frame/bootstrap.min.js"></script>
+    <script src="My/WdatePicker.js"></script>
+    <script src="frame/j.suggest.js"></script>
+    <!-- ECharts单文件引入 -->
+    <script src="frame/echarts/echarts.min.js"></script>
+</head>
+<body>
+<div class="main" style="display: none">
+    <div class="wrap">
+        <div class="crumbs">
+            <a href="index.html" title="首页">首页</a> >
+            <a href="train.html" title="研修培训">研修培训</a> >
+            <span class="this-pag" title="培训统计">培训统计</span>
+        </div>
+        <div class="count-box container-fluid mtl">
+            <div class="row">
+                <div class="col-xs-12 count-banner mbl">
+                    <span class="active" rel="TrainCount">培训统计</span>
+                    <span rel="WatchCount">收看统计</span>
+                    <span rel="CallrollCount">点名统计</span>
+                </div>
+
+                <!--筛选条件-->
+                <div class="col-sm-12 count-select pbm">
+                    <div class="form-groups inline">
+                        <label for="beginDate" class="control-label">开始时间 ：</label>
+                        <div class="control-div mlm">
+                            <input id="beginDate" type="text" class="form-control" name="beginDate" placeholder="开始时间"
+                                   onfocus="WdatePicker({
+                                   onpicked:function(dp){Count.getDate(dp)},
+                                   oncleared: function(dp){Count.clearDate(dp)},
+                                   dateFmt:'yyyy/MM/dd HH:mm:ss',
+                                   maxDate:'#F{$dp.$D(\'endDate\',{s:-1})||\'%y-%M-%d %H:%m:%s\'}'
+                                 //  maxDate:'#F{$dp.$D(\'d4312\')||\'%y-%M-%d %H:%m:%s\'}'
+                                   })" />
+                        </div>
+                    </div>
+                    <div class="form-groups inline">
+                        <label for="endDate" class="control-label">结束时间 ：</label>
+                        <div class="control-div mlm">
+                            <input id="endDate" type="text" class="form-control" name="endDate" placeholder="结束时间"
+                                   onfocus="WdatePicker({
+                                   onpicked:function(dp){Count.getDate(dp)},
+                                   oncleared: function(dp){Count.clearDate(dp)},
+                                   dateFmt:'yyyy/MM/dd HH:mm:ss',
+                                   maxDate:'%y-%M-%d %H:%m:%s',
+                                   minDate:'#F{$dp.$D(\'beginDate\',{s:1});}'
+                                   })" />
+                        </div>
+                    </div>
+                    <div class="form-groups inline">
+                        <label class="control-label" for="train-status">培训状态：</label>
+                        <div class="control-div checkbox-div">
+                            <select data-toggle="select" class="form-control select select-defined mlm" id="train-status">
+                                <option value="0">全部</option>
+                                <option value="1">准备中</option>
+                                <option value="2">培训中</option>
+                                <option value="3">反馈中</option>
+                                <option value="4">已结束</option>
+                            </select>
+                        </div>
+                        <div class="more-select control-div" title="更多查询条件" id="more-select">
+                            更多 <span>+</span>
+                        </div>
+                        <div class="more-select clear-select control-div" title="清除筛选条件" id="clear-select">
+                            清除
+                        </div>
+                    </div>
+
+
+                    <div class="more-select-box">
+                        <div class="form-groups mtm">
+                            <label for="train-device" class="control-label">选择设备 ：</label>
+                            <div class="control-div mlm" style="position: relative">
+                                <input class="form-control" type="text" rel="0" id="train-device" placeholder="选择设备" style="width: 400px"/>
+                                <div id='train-device-id' class="ac-results"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-groups mtm">
+                            <label for="train-father" class="control-label">选择培训项目 ：</label>
+                            <div class="control-div mlm" style="position: relative">
+                                <input type="text" class="form-control" placeholder="选择培训项目" id="train-father" rel="0" style="width: 400px"/>
+                                <div id='train-father-id' class="ac-results"></div>
+                            </div>
+                        </div>
+                        <div class="form-groups mtm" style="display: none">
+                            <label class="control-label" for="train-father">子培训：</label>
+                            <div class="control-div checkbox-div mlm">
+                                <select data-toggle="select" class="form-control select select-defined" id="train-child">
+                                    <option value="0">子培训01</option>
+                                    <option value="2">子培训02</option>
+                                    <option value="3">子培训03</option>
+                                    <option value="4">子培训04</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--End 筛选条件-->
+
+                <div class="col-xs-12">
+                    <!--培训统计-->
+                    <div class="table-responsive mtl mbl" id="TrainCount" style="display: none">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr class="info">
+                                <th class="text-center">序号</th>
+                                <th class="text-center">培训项目名称</th>
+                                <th class="text-center">培训时间</th>
+                                <th class="text-center">状态</th>
+                                <th class="text-center">设备</th>
+                                <th class="text-center">预计参会人数</th>
+                                <th class="text-center">实到人数</th>
+                                <th class="text-center">报名人数</th>
+                                <th class="text-center">总收看人次</th>
+                                <th class="text-center">认真率</th>
+                                <th class="text-center">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item, index) in items">
+                                <td>{{ index+1 }}</td>
+                                <td class="text-left" :title="item.name">{{ item.name | substrTitle }}</td>
+                                <td class="text-left" v-html="changeDate(item.data)"></td>
+                                <td>{{ item.status }}</td>
+                                <td><span :title="item.equipName">{{ item.equipNum }}</span></td>
+                                <td>{{ item.participatorCount }}</td>
+                                <td>{{ item.actuallyRealizedCount }}</td>
+                                <td>{{ item.applyCount }}</td>
+                                <td>{{ item.watchCount }}</td>
+                                <td>{{ item.earnestRate }}</td>
+                                <td v-if="item.status === '准备中'" title="还没有相关数据">-</td>
+                                <td v-else>
+                                    <span title="查看详细数据" v-on:click="readInfo(item.id, item.name)">查看</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div id="Trainpage"></div>
+                    </div>
+                    <!--End 培训统计-->
+                    <!--观看统计-->
+                    <div class="table-responsive mtl mbl" id="WatchCount" style="display: none">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr class="info">
+                                <th class="text-center">序号</th>
+                                <th class="text-center">培训项目名称</th>
+                                <th class="text-center">培训时间</th>
+                                <th class="text-center">状态</th>
+                                <th class="text-center">设备</th>
+                                <th class="text-center">累计收看人次</th>
+                                <th class="text-center">直播</th>
+                                <th class="text-center">点播</th>
+                                <th class="text-center">网页直播</th>
+                                <th class="text-center">智能终端直播</th>
+                                <th class="text-center">网页点播</th>
+                                <th class="text-center">智能终端点播</th>
+                                <th class="text-center">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item, index) in items">
+                                <td>{{ index+1 }}</td>
+                                <td class="text-left" :title="item.name">{{ item.name | substrTitle }}</td>
+                                <td class="text-left" v-html="changeDate(item.data)"></td>
+                                <td>{{ item.status }}</td>
+                                <td><span :title="item.equipName">{{ item.equipNum }}</span></td>
+                                <td>{{ item.watchCount}}</td>
+                                <td>{{ item.liveWatchCount}}</td>
+                                <td>{{ item.recordWatchCount}}</td>
+                                <td>{{ item.webpageLiveWatchCount}}</td>
+                                <td>{{ item.terminalLiveWatchCount}}</td>
+                                <td>{{ item.webpageRecordWatchCount}}</td>
+                                <td>{{ item.terminalRecordWatchCount}}</td>
+                                <td v-if="item.status === '准备中'" title="还没有相关数据">-</td>
+                                <td v-else>
+                                    <span title="查看详细数据" v-on:click="readInfo(item.id, item.name)">查看</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--End 观看统计-->
+                    <!--点名统计-->
+                    <div class="table-responsive mtl mbl" id="CallrollCount" style="display: none">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                            <tr class="info">
+                                <th class="text-center">序号</th>
+                                <th class="text-center">培训项目名称</th>
+                                <th class="text-center">培训时间</th>
+                                <th class="text-center">状态</th>
+                                <th class="text-center">设备</th>
+                                <th class="text-center">直播参会人数</th>
+                                <th class="text-center">点名次数</th>
+                                <th class="text-center">总签到率</th>
+                                <th class="text-center">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item, index) in items">
+                                <td>{{ index+1 }}</td>
+                                <td class="text-left" :title="item.name">{{ item.name | substrTitle }}</td>
+                                <td class="text-left" v-html="changeDate(item.data)"></td>
+                                <td>{{ item.status }}</td>
+                                <td><span :title="item.equipName">{{ item.equipNum }}</span></td>
+                                <td>{{ item.participatorCount }}</td>
+                                <td>{{ item.callrollTimes }}</td>
+                                <td>{{ item.earnestRate }}</td>
+                                <td v-if="item.status === '准备中'" title="还没有相关数据">-</td>
+                                <td v-else>
+                                    <span title="查看详细数据" v-on:click="readInfo(item.id, item.name)">查看</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--End 点名统计-->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!--echarts 图表绘制模块-->
+<div class="modal fade bs-countEcharts-modal">
+    <div class="modal-content modal-dialog modal-content-large">
+        <div class="modal-header">
+            <h4 class="modal-title"><span>11</span><a href="javascript:void(0);" data-dismiss="modal">+</a></h4>
+        </div>
+        <div class="modal-body" id="ViewInfo">
+            <div class="form-groups">
+                <div class="control-label">培训时间 ：</div>
+                <div class="control-div mlm">{{ infoData.data }}</div>
+            </div>
+            <div class="form-groups">
+                <div class="control-label">培训地点：</div>
+                <div class="control-div mlm">{{ infoData.address }}</div>
+            </div>
+            <div class="form-groups">
+                <div class="control-label">状态：</div>
+                <div class="control-div mlm">{{ infoData.status }}</div>
+            </div>
+            <div class="form-groups">
+                <div class="control-label">是否公开：</div>
+                <div class="control-div mlm" v-if="infoData.isPublic">公开</div>
+                <div class="control-div mlm" v-else>不公开（密码：）</div>
+            </div>
+            <div class="form-groups">
+                <div class="control-label">是否允许报名：</div>
+                <div class="control-div mlm" v-if="infoData.allowToSignUp">是</div>
+                <div class="control-div mlm" v-else>否</div>
+            </div>
+            <!--培训统计-->
+            <div  v-if="cout_type === 'TrainCount'">
+                <div class="form-groups" v-if="infoData.personInfo">
+                    <div class="control-label">人员情况：</div>
+                    <div class="control-div mlm">
+                        <p>总参训人{{ infoData.personInfo.participatorCount }}人，
+                            实到{{ infoData.personInfo.actualParticipatorCount }}人，
+                            其中指定参训人{{ infoData.personInfo.assignParticipatorCount }}人，
+                            实到{{ infoData.personInfo.actualAssignParticipatorCount }}人，
+                            缺席{{ infoData.personInfo.absentAssignParticipatorCount }}人指定参训人缺勤率{{ infoData.personInfo.assignAbsenRate }}；
+                            报名{{ infoData.personInfo.applyCount }}人，
+                            审核通过{{ infoData.personInfo.applyApproveCount }}人，
+                            其中实到{{ infoData.personInfo.actualApplyCount }}人，
+                            缺席{{ infoData.personInfo.absentApplyCount }}人，
+                            报名缺勤率{{ infoData.personInfo.absentApplyRate }}。</p>
+                    </div>
+                </div>
+                <div class="form-groups" v-if="infoData.feedbackInfo">
+                    <div class="control-label">反馈人数：</div>
+                    <div class="control-div mlm"> 计划反馈数{{ infoData.feedbackInfo.planFeedbackCount }}份，实收反馈{{ infoData.feedbackInfo.feedbackedCount }}份，反馈参与率{{ infoData.feedbackInfo.feedbackRate }}。</div>
+                </div>
+            </div>
+            <!--End培训统计-->
+
+            <!--收看统计-->
+            <div  v-else-if="cout_type === 'WatchCount'">
+                <div class="form-groups" v-if="infoData.feedbackInfo">
+                    <div class="control-label">子培训数量：</div>
+                    <div class="control-div mlm">{{ infoData.feedbackInfo }}</div>
+                </div>
+                <div class="form-groups" v-if="infoData.watchInfo">
+                    <div class="control-label">收看情况：</div>
+                    <div class="control-div mlm">
+                        <p>累计总收看{{ infoData.watchInfo.watchCount }}人次，
+                            其中直播收看{{ infoData.watchInfo.liveWatchCount }}人次，
+                            点播收看{{ infoData.watchInfo.recordWatchCount }}人次。
+                            网页端直播收看{{ infoData.watchInfo.webpageLiveWatchCount }}人次，
+                            智能终端收看{{ infoData.watchInfo.terminalLiveWatchCount }}人次；
+                            网页点播收看{{ infoData.watchInfo.webpageRecordWatchCount }}人次；
+                            智能终端点播{{ infoData.watchInfo.terminalRecordWatchCount }}人次。</p>
+                    </div>
+                </div>
+            </div>
+            <!--End 收看统计-->
+
+            <!--点名统计-->
+            <div v-else-if="cout_type === 'CallrollCount'">
+                <div class="form-groups" v-if="infoData.callrollInfo && infoData.callrollInfo.participatorCount">
+                    <div class="control-label">点名情况：</div>
+                    <div class="control-div mlm">
+                        <p>共{{ infoData.callrollInfo.participatorCount }}人参于直播，发起点名{{ infoData.callrollInfo.callrollNumber }}次，总签到率{{ infoData.callrollInfo.earnestRate }}</p>
+                    </div>
+                </div>
+                <div class="form-groups" v-if="infoData.callrollArr">
+                    <div class="container-fluid"  v-for="(item, index) in infoData.callrollArr">
+                        <div class="form-groups">
+                            <div class="control-label">第{{ index+1 }}次：</div>
+                            <div class="control-div mlm">时间{{ item.callrollTime }}    签到{{ item.signInCount }}人，未签到{{ item.unSignInCount }}人，认真率{{ item.earnestRate }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End点名统计-->
+
+            <!--绘制图形 canvas-->
+           <div class="container-fluid">
+               <div class="row mtl">
+                   <div class="col-sm-12 col-md-6 echart-map"  v-for="(item, index) in infoData.chart">
+                      <!-- <h3>{{ item.name}}</h3>-->
+                      <div v-html="replaceMethod(item,('echarts' + (index+1)))" :id="'echarts' + (index+1)" style="width: 100%; height: 400px;">
+                      </div>
+                   </div>
+               </div>
+           </div>
+            <!--End 绘制图形 canvas-->
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/common.js"></script>
+<script src="js/countted.js"></script>
+
+</html>

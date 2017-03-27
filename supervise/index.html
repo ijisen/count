@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="main">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>教学监管</title>
+    <meta name="description" content="教育平台"/>
+    <meta name="keywords" content="教育平台"/>
+    <link rel="stylesheet" href="../css/flat-ui.css">
+    <link rel="stylesheet" href="../css/control.css"/>
+    <link rel="stylesheet" href="css/supervise.css">
+    <script src="../frame/jquery-1.11.3.min.js"></script>
+    <script src="../js/common.js"></script>
+</head>
+<body>
+
+<!--中间内容-->
+<div class="supervise_title">
+    <span>教学监管</span> /
+    <span>全国</span>
+</div>
+<div class="supervise" style="display: none">
+    <!--数据接入-->
+    <div class="data-banner" style="display: none">
+        <ul>
+            <li><a href="#/data">数据分析</a></li>
+            <li><a href="#/class">课堂巡视</a></li>
+            <li><a href="#/device" >设备监控</a></li>
+        </ul>
+    </div>
+    <div class="map_left">
+        <div id="main-box" style="width: 100%; height: 595px;"></div>
+    </div>
+    <!--右侧选项卡-->
+    <div class="map_right">
+        <h3 class="bg-info">全国</h3>
+        <div class="map_tab">
+            <span class="map_span_on">今日</span>
+            <span>本周</span>
+            <span>本学期</span>
+        </div>
+        <div class="tab_wrap">
+            <!--今日-->
+            <div class="tab_content">
+
+            </div>
+        </div>
+    </div>
+    <div id="ng-box"  ng-view ng-cloak></div>
+</div>
+
+
+<!-- ECharts单文件引入 -->
+<script src="../frame/echarts/echarts-all.js"></script>
+<script src="js/supervise.js"></script>
+<script src="js/map.js"></script>
+
+
+
+<!-- angular -->
+<script src="frame/angular.js"></script>
+<script src="frame/angular-route.js"></script>
+<script src="js/angular-controller.js"></script>
+<script src="../frame/flat-ui.js"></script>
+<script src="js/data.js"></script>
+</body>
+</html>
