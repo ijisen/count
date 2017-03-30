@@ -41,8 +41,8 @@
                                    onfocus="WdatePicker({
                                    onpicked:function(dp){Count.getDate(dp)},
                                    oncleared: function(dp){Count.clearDate(dp)},
-                                   dateFmt:'yyyy/MM/dd HH:mm:ss',
-                                   maxDate:'#F{$dp.$D(\'endDate\',{s:-1})||\'%y-%M-%d %H:%m:%s\'}'
+                                   dateFmt:'yyyy-MM-dd',
+                                   maxDate:'#F{$dp.$D(\'endDate\')||\'%y-%M-%d\'}'
                                  //  maxDate:'#F{$dp.$D(\'d4312\')||\'%y-%M-%d %H:%m:%s\'}'
                                    })" />
                         </div>
@@ -54,9 +54,9 @@
                                    onfocus="WdatePicker({
                                    onpicked:function(dp){Count.getDate(dp)},
                                    oncleared: function(dp){Count.clearDate(dp)},
-                                   dateFmt:'yyyy/MM/dd HH:mm:ss',
-                                   maxDate:'%y-%M-%d %H:%m:%s',
-                                   minDate:'#F{$dp.$D(\'beginDate\',{s:1});}'
+                                   dateFmt:'yyyy-MM-dd',
+                                   maxDate:'%y-%M-%d',
+                                   minDate:'#F{$dp.$D(\'beginDate\');}'
                                    })" />
                         </div>
                     </div>
@@ -78,7 +78,6 @@
                             清除
                         </div>
                     </div>
-
 
                     <div class="more-select-box">
                         <div class="form-groups mtm">
@@ -137,7 +136,7 @@
                                 <td class="text-left" :title="item.name">{{ item.name | substrTitle }}</td>
                                 <td class="text-left" v-html="changeDate(item.data)"></td>
                                 <td>{{ item.status }}</td>
-                                <td><span :title="item.equipName">{{ item.equipNum }}</span></td>
+                                <td :title="item.equipName">{{ item.equipNum }}</td>
                                 <td>{{ item.participatorCount }}</td>
                                 <td>{{ item.actuallyRealizedCount }}</td>
                                 <td>{{ item.applyCount }}</td>
@@ -179,7 +178,7 @@
                                 <td class="text-left" :title="item.name">{{ item.name | substrTitle }}</td>
                                 <td class="text-left" v-html="changeDate(item.data)"></td>
                                 <td>{{ item.status }}</td>
-                                <td><span :title="item.equipName">{{ item.equipNum }}</span></td>
+                                <td :title="item.equipName">{{ item.equipNum }}</td>
                                 <td>{{ item.watchCount}}</td>
                                 <td>{{ item.liveWatchCount}}</td>
                                 <td>{{ item.recordWatchCount}}</td>
@@ -218,7 +217,7 @@
                                 <td class="text-left" :title="item.name">{{ item.name | substrTitle }}</td>
                                 <td class="text-left" v-html="changeDate(item.data)"></td>
                                 <td>{{ item.status }}</td>
-                                <td><span :title="item.equipName">{{ item.equipNum }}</span></td>
+                                <td :title="item.equipName">{{ item.equipNum }}</td>
                                 <td>{{ item.participatorCount }}</td>
                                 <td>{{ item.callrollTimes }}</td>
                                 <td>{{ item.earnestRate }}</td>
@@ -264,7 +263,7 @@
             <div class="form-groups">
                 <div class="control-label">是否公开：</div>
                 <div class="control-div mlm" v-if="infoData.isPublic">公开</div>
-                <div class="control-div mlm" v-else>不公开（密码：）</div>
+                <div class="control-div mlm" v-else>不公开</div>
             </div>
             <div class="form-groups">
                 <div class="control-label">是否允许报名：</div>
@@ -277,20 +276,20 @@
                     <div class="control-label">人员情况：</div>
                     <div class="control-div mlm">
                         <p>总参训人{{ infoData.personInfo.participatorCount }}人，
-                            实到{{ infoData.personInfo.actualParticipatorCount }}人，
+                            实到{{ infoData.personInfo.actualParticipatorCount }}人；
                             其中指定参训人{{ infoData.personInfo.assignParticipatorCount }}人，
                             实到{{ infoData.personInfo.actualAssignParticipatorCount }}人，
-                            缺席{{ infoData.personInfo.absentAssignParticipatorCount }}人指定参训人缺勤率{{ infoData.personInfo.assignAbsenRate }}；
+                            缺席{{ infoData.personInfo.absentAssignParticipatorCount }}人，指定参训人缺勤率{{ infoData.personInfo.assignAbsenRate }}；
                             报名{{ infoData.personInfo.applyCount }}人，
                             审核通过{{ infoData.personInfo.applyApproveCount }}人，
                             其中实到{{ infoData.personInfo.actualApplyCount }}人，
                             缺席{{ infoData.personInfo.absentApplyCount }}人，
-                            报名缺勤率{{ infoData.personInfo.absentApplyRate }}。</p>
+                            报名参训人缺勤率{{ infoData.personInfo.absentApplyRate }}</p>
                     </div>
                 </div>
                 <div class="form-groups" v-if="infoData.feedbackInfo">
                     <div class="control-label">反馈人数：</div>
-                    <div class="control-div mlm"> 计划反馈数{{ infoData.feedbackInfo.planFeedbackCount }}份，实收反馈{{ infoData.feedbackInfo.feedbackedCount }}份，反馈参与率{{ infoData.feedbackInfo.feedbackRate }}。</div>
+                    <div class="control-div mlm"> 计划反馈数{{ infoData.feedbackInfo.planFeedbackCount }}份，实收反馈{{ infoData.feedbackInfo.feedbackedCount }}份，反馈参与率{{ infoData.feedbackInfo.feedbackRate }}</div>
                 </div>
             </div>
             <!--End培训统计-->
@@ -306,11 +305,11 @@
                     <div class="control-div mlm">
                         <p>累计总收看{{ infoData.watchInfo.watchCount }}人次，
                             其中直播收看{{ infoData.watchInfo.liveWatchCount }}人次，
-                            点播收看{{ infoData.watchInfo.recordWatchCount }}人次。
+                            点播收看{{ infoData.watchInfo.recordWatchCount }}人次；
                             网页端直播收看{{ infoData.watchInfo.webpageLiveWatchCount }}人次，
-                            智能终端收看{{ infoData.watchInfo.terminalLiveWatchCount }}人次；
-                            网页点播收看{{ infoData.watchInfo.webpageRecordWatchCount }}人次；
-                            智能终端点播{{ infoData.watchInfo.terminalRecordWatchCount }}人次。</p>
+                            智能终端直播收看{{ infoData.watchInfo.terminalLiveWatchCount }}人次；
+                            网页端点播收看{{ infoData.watchInfo.webpageRecordWatchCount }}人次，
+                            智能终端点播收看{{ infoData.watchInfo.terminalRecordWatchCount }}人次。</p>
                     </div>
                 </div>
             </div>
@@ -321,7 +320,7 @@
                 <div class="form-groups" v-if="infoData.callrollInfo && infoData.callrollInfo.participatorCount">
                     <div class="control-label">点名情况：</div>
                     <div class="control-div mlm">
-                        <p>共{{ infoData.callrollInfo.participatorCount }}人参于直播，发起点名{{ infoData.callrollInfo.callrollNumber }}次，总签到率{{ infoData.callrollInfo.earnestRate }}</p>
+                        <p>共{{ infoData.callrollInfo.participatorCount }}人参与直播，发起点名{{ infoData.callrollInfo.callrollNumber }}次，总签到率{{ infoData.callrollInfo.earnestRate }}</p>
                     </div>
                 </div>
                 <div class="form-groups" v-if="infoData.callrollArr">
@@ -335,16 +334,46 @@
             </div>
             <!--End点名统计-->
 
+            <!--下载模块-->
+            <div class="form-groups text-right prm" style="position: relative"  v-if="haveCount" >
+                <span class="btn-info" v-on:click="showDownBox" >下载各类人员名单</span>
+                <!--下载excle-->
+                <div id="downCountFile">
+                    <div class="ac-head"><em class="ac-close" v-on:click="showDownBox">+</em></div>
+                    <div class="file-btn">
+                        <div>
+                            <!--   <span  v-for="(v, k, index) in downFileName.all" :rel="k">{{ v }}</span> -->
+                            <a  v-for="(key, index) in downFileName.all"  :class="'color' + index" :href="key['params']">{{ key['name'] }}</a>
+                        </div>
+                        <div class="fl-left">
+                            <!-- <span  v-for="(v, k, index) in downFileName.left" :class="'color' + index" :rel="k">{{ v }}</span>-->
+                            <a  v-for="(key, index) in downFileName.left"  :class="'color' + index"  :href="key['params']">{{ key['name'] }}</a>
+                            <!-- <span class="color0">指定参训人全部名单</span>
+                             <span class="color1">指定参训人实到名单</span>
+                             <span class="color2">指定参训人缺席名单</span>-->
+                        </div>
+                        <div class="fl-right">
+                            <!-- <span  v-for="(v, k, index) in downFileName.right" :class="'color' + index" :rel="k">{{ v }}</span>-->
+                            <a  v-for="(key, index) in downFileName.right"  :class="'color' + index"  :href="key['params']">{{ key['name'] }}</a>
+                            <!-- <span class="color0">报名人全部名单</span>
+                             <span class="color1">报名人实到名单</span>
+                             <span class="color2">报名人缺席名单</span>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End下载模块-->
+
             <!--绘制图形 canvas-->
-           <div class="container-fluid">
-               <div class="row mtl">
-                   <div class="col-sm-12 col-md-6 echart-map"  v-for="(item, index) in infoData.chart">
-                      <!-- <h3>{{ item.name}}</h3>-->
-                      <div v-html="replaceMethod(item,('echarts' + (index+1)))" :id="'echarts' + (index+1)" style="width: 100%; height: 400px;">
-                      </div>
-                   </div>
-               </div>
-           </div>
+            <div class="container-fluid">
+                <div class="row mtl">
+                    <div class="col-sm-12 col-md-6 echart-map"  v-for="(item, index) in infoData.chart">
+                        <!-- <h3>{{ item.name}}</h3>-->
+                        <div v-html="replaceMethod(item, ('echarts' + (index+1)))" :id="'echarts' + (index+1)" style="width: 100%; height: 400px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!--End 绘制图形 canvas-->
         </div>
     </div>

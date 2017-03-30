@@ -796,14 +796,152 @@ var ViewInfo = function(){
                     },
                     reaLoad: function (bean) {
                         var arr_len = bean.length;
+                        var _type = view_con.count_type;
+                        var _courseId = view_con.courseId;
                         console.log(arr_len);
                         // view_con.vue.infoData.splice(arr_len);
                         view_con.vue.infoData = bean;
-                        view_con.vue.cout_type = view_con.count_type;
-                    }
-                },
-                filters : {
+                        view_con.vue.cout_type = _type;
 
+                        //只有当有统计数据时，才加载下载功能
+                        if(bean.chart && bean.chart.length > 0 ){
+                            console.log(bean.chart.length);
+                            //显示下载按钮
+                            view_con.vue.haveCount = true;
+                            //写入下载分类按钮
+                            view_con.vue.downFileName = setDownFileName(_type, bean);
+                        }else{
+                            view_con.vue.haveCount = false;
+                        }
+
+
+                        //根据cout_type设置downFileName字段名称及下载地址
+                        function setDownFileName(type, data){
+                            //下载地址 默认存放 TrainCount 统计培训
+                            var _url = "#";
+                            //下载列表按钮数据， 默认存放 TrainCount 统计培训
+                            var _obj = {
+                                "all" : [
+                                    {
+                                        "name" : "全部名单",
+                                        "params" : _url + '?type=default&childTrainId=' + _courseId
+                                    }
+                                ],
+                                "left" : [
+                                    {
+                                        "name" : "指定参训人全部名单",
+                                        "params" : _url + '?type=assignParticipator&childTrainId=' + _courseId
+                                    },
+                                    {
+                                        "name" : "指定参训人实到名单",
+                                        "params" : _url + '?type=actualAssignParticipator&childTrainId=' + _courseId
+                                    },
+                                    {
+                                        "name" : "指定参训人缺席名单",
+                                        "params" : _url + '?type=absentAssignParticipator&childTrainId=' + _courseId
+                                    }
+                                ],
+                                "right" : [
+                                    {
+                                        "name" : "报名人全部名单",
+                                        "params" : _url + '?type=applyApprove&childTrainId=' + _courseId
+                                    },
+                                    {
+                                        "name" : "报名人实到名单",
+                                        "params" : _url + '?type=actualApply&childTrainId=' + _courseId
+                                    },
+                                    {
+                                        "name" : "报名人缺席名单",
+                                        "params" : _url + '?type=absentApply&childTrainId=' + _courseId
+                                    }
+                                ]
+
+                            };
+                            switch (type){
+                                //收看统计
+                                case "WatchCount" :
+                                    //_url = "statistics/exportWatch.do";
+                                    _obj = {
+                                        "all" : [
+                                            {
+                                                "name" : "全部名单",
+                                                "params" : _url + '?watchType=&watchTernimal=&watchTernimalFlag=&childTrainId=' + _courseId
+                                            }
+                                        ],
+                                        "left" : [
+                                            {
+                                                "name" : "直播收看全部名单",
+                                                "params" : _url + '?watchType=1&watchTernimal=&watchTernimalFlag=&childTrainId=' + _courseId
+                                            },
+                                            {
+                                                "name" : "网页直播收看名单",
+                                                "params" : _url + '?watchType=1&watchTernimal=webpage&watchTernimalFlag=true&childTrainId=' + _courseId
+                                            },
+                                            {
+                                                "name" : "智能终端直播收看",
+                                                "params" : _url + '?watchType=1&watchTernimal=webpage&watchTernimalFlag=false&childTrainId=' + _courseId
+                                            }
+                                        ],
+                                        "right" : [
+                                            {
+                                                "name" : "点播收看全部名单",
+                                                "params" : _url + '?watchType=2&watchTernimal=&watchTernimalFlag=&childTrainId=' + _courseId
+                                            },
+                                            {
+                                                "name" : "网页点播收看名单",
+                                                "params" : _url + '?watchType=2&watchTernimal=webpage&watchTernimalFlag=true&childTrainId=' + _courseId
+                                            },
+                                            {
+                                                "name" : "智能终端点播收看",
+                                                "params" : _url + '?watchType=2&watchTernimal=webpage&watchTernimalFlag=false&childTrainId=' + _courseId
+                                            }
+                                        ]
+                                    };
+                                    break;
+                                //点名统计
+                                case "CallrollCount" :
+                                  //  _url = "statistics/exportCallroll.do";
+                                    _obj = setCallrollCountData(data);
+
+                                    //点名统计的下载按钮需要根据点名次数(callrollArr)来设置
+                                function setCallrollCountData(data){
+                                    var callroll_arr = data.callrollArr || [];
+                                    var callroll_len = callroll_arr.length;
+                                    console.log(callroll_len);
+                                    var times = ['一', '二', '三', '四', '五', '六', '七'];
+                                    var _obj = {
+                                        "all" : [
+                                            {
+                                                "name" : "全部名单",
+                                                "params" : _url +  '?times=&isSignIn=&childTrainId=' + _courseId
+                                            }
+                                        ],
+                                        "left" : [],
+                                        "right" : []
+                                    };
+                                    $.each(callroll_arr, function(i){
+                                        var k = i+1;
+                                        var _num = times[i];
+                                        _obj.left.push({
+                                            "name" : "第" + _num + '次签到人员名单',
+                                            "params" : _url + '?times=' + k + '&isSignIn=true&childTrainId=' + _courseId
+                                        });
+                                        _obj.right.push({
+                                            "name" : "第" + _num + '次未签到人员名单',
+                                            "params" : _url + '?times=' + k + '&isSignIn=false&childTrainId=' + _courseId
+                                        });
+                                    });
+                                    return _obj;
+                                }
+                                    break;
+                            }
+                            return _obj;
+                        }
+                    },
+                    //“下载各类人员名单”按钮事件,控制下载框的显隐藏，同时传递当前课程Id
+                    showDownBox : function(){
+                        $('#downCountFile').toggle();
+                    }
                 }
             });
             console.log('Vue Is Inited')
