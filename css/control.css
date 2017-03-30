@@ -1469,6 +1469,87 @@ h3.error{
     background-repeat: no-repeat;
     background-position: center;
 }
+
+/*下载模块*/
+.bs-countEcharts-modal .btn-info{
+    padding: 4px 15px;
+    font-size: 12px;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+#downCountFile{
+    position: absolute;
+    width: 700px;
+    left: 50%;
+    margin-left: -350px;
+    top: 50px;
+    background-color: #fff;
+    border: 1px solid #d8d8d8;
+    z-index: 999;
+    padding: 15px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,0.1);
+    display: none;
+}
+#downCountFile .ac-head{
+    height: 30px;
+}
+#downCountFile .ac-head .ac-close{
+    top: 0;
+}
+#downCountFile .fl-left,
+#downCountFile .fl-right{
+    width: 50%;
+}
+#downCountFile a{
+    display: block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 250px;
+    margin-bottom: 15px;
+    background-color: #1793ff;
+    border-radius: 2px;
+    color: #fff;
+    text-align: center;
+}
+#downCountFile a:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+#downCountFile a.color0 {
+    background-color:  #6495ed;
+}
+
+
+#downCountFile .fl-left a.color1 {
+    background-color:  #ff7f50;
+}
+#downCountFile .fl-left a.color2 {
+    background-color: #87cefa;
+}
+#downCountFile .fl-left a.color3 {
+    background-color: #ff69b4;
+}
+#downCountFile .fl-left a.color4 {
+    background-color: #cd5c5c;
+}
+
+
+#downCountFile .fl-right a.color1 {
+    background-color:  #da70d6;
+}
+#downCountFile .fl-right a.color2 {
+    background-color:  #32cd32;
+}
+#downCountFile .fl-right a.color3 {
+    background-color:  #ba55d3;
+}
+#downCountFile .fl-left a.color4 {
+    background-color: #ffa500;
+}
+/*end 下载模块*/
+
 /*------------End 培训统计--------------*/
 
 
