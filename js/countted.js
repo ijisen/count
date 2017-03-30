@@ -952,8 +952,11 @@ var ViewInfo = function(){
         };
         ViewControl.prototype.init = function(){
             view_con.vue_init();
-            console.log(123);
-
+            $('.bs-countEcharts-modal').on('hidden.bs.modal', function () {
+                //隐藏下载框
+                $('#downCountFile').hide();
+                console.log('hide downCountFile')
+            });
         };
         return ViewControl;
     }());
