@@ -782,7 +782,11 @@ var ViewInfo = function(){
                 el: '#ViewInfo',
                 data: {
                     cout_type: view_con.count_type,
-                    infoData : {}
+                    infoData : {},
+                    //下载链接地址
+                    downFileName : {},
+                    //是否显示下载按钮
+                    haveCount : false
                 },
                 methods: {
                     replaceMethod : function(data, id){
